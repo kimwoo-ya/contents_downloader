@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"bytes"
 	clientrequest "contents_downloader/internal/pkg/client_request"
+	"contents_downloader/internal/pkg/config"
 	"contents_downloader/internal/pkg/format"
 	"contents_downloader/internal/pkg/utils"
 	"encoding/json"
@@ -49,7 +50,7 @@ func GetContentFormat(c *websocket.Conn) {
 	//}
 	////////////////////////////////////////////////////
 	//c.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("command(purpose: get meta-data, url:%v) started", metadataRequest.URI)))
-	cmd := exec.Command("/opt/homebrew/bin/yt-dlp", "--dump-json", metadataRequest.URI)
+	cmd := exec.Command(config.Cfg.YtdlpPath, "--dump-json", metadataRequest.URI)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Errorf("yt-dlp stdout pipe error:%v", err)
@@ -74,7 +75,7 @@ func GetContentFormat(c *websocket.Conn) {
 	serverResponse["thumbnails"] = thumbnails
 
 	formatBytes, _ := json.Marshal(serverResponse)
-	log.Infof("server sent %v.....", string(formatBytes)[:50])
+	log.Infof("server sent %v.....", string(formatBytes)[:len(string(formatBytes))/2])
 	if err := c.WriteMessage(websocket.TextMessage, formatBytes); err != nil {
 		log.Info("웹소켓 전송 실패:%v", err)
 		return
@@ -83,7 +84,7 @@ func GetContentFormat(c *websocket.Conn) {
 }
 
 func getFileName(url string) (string, error) {
-	cmd := exec.Command("/opt/homebrew/bin/yt-dlp", "-o", "%(id)s.%(ext)s", "--get-filename", url)
+	cmd := exec.Command(config.Cfg.YtdlpPath, "-o", "%(id)s.%(ext)s", "--get-filename", url)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Errorf("yt-dlp stdout pipe error:%v", err)
@@ -146,8 +147,8 @@ func GetMediaDownloaded(c *websocket.Conn) {
 	}
 
 	destination := fmt.Sprintf(`./downloads/%v_%v.%v`, mediaRequest.FORMAT_ID, "%(id)s", "%(ext)s")
-	//cmd := exec.Command("/opt/homebrew/bin/yt-dlp", "-f", mediaRequest.FORMAT_ID, "--newline", "--progress-template", "%(progress)j", mediaRequest.URI, "-o", "./downloads/%(id)s.%(ext)s")
-	cmd := exec.Command("/opt/homebrew/bin/yt-dlp", "-f", mediaRequest.FORMAT_ID, "--newline", "--progress-template", "%(progress)j", mediaRequest.URI, "-o", destination)
+	//cmd := exec.Command(config.Cfg.YtdlpPath, "-f", mediaRequest.FORMAT_ID, "--newline", "--progress-template", "%(progress)j", mediaRequest.URI, "-o", "./downloads/%(id)s.%(ext)s")
+	cmd := exec.Command(config.Cfg.YtdlpPath, "-f", mediaRequest.FORMAT_ID, "--newline", "--progress-template", "%(progress)j", mediaRequest.URI, "-o", destination)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Errorf("yt-dlp stdout pipe error:%v", err)
@@ -284,7 +285,7 @@ func GetBulkMediaDownloaded(c *websocket.Conn) {
 				filename = fmt.Sprintf("%v_%v", mediaRequest.FORMAT_ID, filename)
 				destination := fmt.Sprintf(`./downloads/%v_%v.%v`, mediaRequest.FORMAT_ID, "%(id)s", "%(ext)s")
 
-				cmd := exec.Command("/opt/homebrew/bin/yt-dlp", "-f", mediaRequest.FORMAT_ID, "--newline", "--progress-template", "%(progress)j", availableUrl, "-o", destination)
+				cmd := exec.Command(config.Cfg.YtdlpPath, "-f", mediaRequest.FORMAT_ID, "--newline", "--progress-template", "%(progress)j", availableUrl, "-o", destination)
 				stdout, err := cmd.StdoutPipe()
 				if err != nil {
 					fmt.Printf("StdoutPipe 에러: %v\n", err)
@@ -455,7 +456,7 @@ func GetBulkMediaDownloadByZip(c *fiber.Ctx) error {
 //	}
 
 //	c.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("command(purpose: get media downloaded, url:%v, formatId:%v) started", mediaRequest.URI, mediaRequest.FORMAT_ID)))
-//	cmd := exec.Command("/opt/homebrew/bin/yt-dlp", "-f", mediaRequest.FORMAT_ID, "--quiet", "--print-json", mediaRequest.URI, "-o", "%(id)s.%(ext)s")
+//	cmd := exec.Command(config.Cfg.YtdlpPath, "-f", mediaRequest.FORMAT_ID, "--quiet", "--print-json", mediaRequest.URI, "-o", "%(id)s.%(ext)s")
 //	stdout, err := cmd.StdoutPipe()
 //	if err != nil {
 //		log.Info("yt-dlp stdout pipe error:%v", err)

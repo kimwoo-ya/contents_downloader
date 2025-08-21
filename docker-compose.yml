@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # Backend Service (Go)
+  backend:
+    build:
+      context: ./be
+      dockerfile: ./internal/deployments/Dockerfile
+    container_name: contents-downloader-be
+    ports:
+      # Expose backend port 8080 to the host
+      - "8080:8080"
+    volumes:
+      # Mount the downloads directory to persist downloaded files on the host
+      - ./be/downloads:/app/downloads
+    restart: unless-stopped
+
+  # Frontend Service (React + Nginx)
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    container_name: contents-downloader-fe
+    ports:
+      # Expose frontend port 80 (from Nginx) to host port 3000
+      - "3000:80"
+    depends_on:
+      # Ensure the backend starts before the frontend
+      - backend
+    restart: unless-stopped

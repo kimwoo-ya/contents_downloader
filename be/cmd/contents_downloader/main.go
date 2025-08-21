@@ -35,7 +35,7 @@ func main() {
 	v1.Get("/download/:filename", func(c *fiber.Ctx) error {
 		filename := c.Params("filename")
 		filePath := filepath.Join("./downloads", filename)
-		return c.SendFile(filePath, true) // true → attachment (다운로드)
+		return c.SendFile(filePath, true)
 	})
 
 	if err := app.Listen(":8080"); err != nil {

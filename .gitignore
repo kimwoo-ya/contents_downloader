@@ -6,6 +6,7 @@ fe/node_modules
 .pnp.js
 .env.*
 be/downloads/
+*/downloads
 # testing
 /coverage
 
