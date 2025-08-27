@@ -19,6 +19,8 @@ export interface BulkDownloadResponse {
   _percent: number;
   downloaded_bytes: number;
   eta: number;
+  originalUrl: string;
+  requestedUri?: string;
   status: string;
   filename: string;
   fragment_count: number;

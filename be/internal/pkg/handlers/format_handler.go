@@ -322,6 +322,7 @@ func GetBulkMediaDownloaded(c *websocket.Conn) {
 							if diff > 0.3 || previousPercentage == 0.0 {
 								previousPercentage = currentPercentage
 								serverResponse["filename"] = filename
+								serverResponse["originalUrl"] = availableUrl
 
 								if formatBytes, err := json.Marshal(serverResponse); err == nil {
 									// WebSocket 메시지 전송을 뮤텍스로 보호

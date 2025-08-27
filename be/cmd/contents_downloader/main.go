@@ -38,7 +38,7 @@ func main() {
 		return c.SendFile(filePath, true)
 	})
 
-	if err := app.Listen(":8080"); err != nil {
+	if err := app.Listen(":3333"); err != nil {
 		log.Info("Fiber server stopped: %v", err)
 	}
 }

@@ -9,7 +9,7 @@ services:
     container_name: contents-downloader-be
     ports:
       # Expose backend port 8080 to the host
-      - "8080:8080"
+      - '3333:8080'
     volumes:
       # Mount the downloads directory to persist downloaded files on the host
       - ./be/downloads:/app/downloads
@@ -23,7 +23,7 @@ services:
     container_name: contents-downloader-fe
     ports:
       # Expose frontend port 80 (from Nginx) to host port 3000
-      - "3000:80"
+      - '3000:80'
     depends_on:
       # Ensure the backend starts before the frontend
       - backend

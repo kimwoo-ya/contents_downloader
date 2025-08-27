@@ -46,3 +46,12 @@ export interface MetaData {
   formats: Format[];
   thumbnails: Thumbnail[];
 }
+
+export interface LocalHistory {
+  filename: string;
+  format: string;
+  reqeuestDate: number;
+  originalUrl: string;
+  thumbnailUrl: string;
+  downloadUrl: string;
+}
